@@ -1,0 +1,11 @@
+---
+title: "EDS 221 Day 7 Morning interactive"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+library(lubridate)
+```
+
