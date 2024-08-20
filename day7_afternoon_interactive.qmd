@@ -1,0 +1,173 @@
+---
+title: "Afternoon interactive session"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+
+## Easier dates and times with {lubridate}
+
+```{r}
+# just calendar dates 
+
+my_date <- "03-05-1998"
+lubridate::mdy(my_date) # prints out the date in the standard form 
+
+my_date <- "11/7/2003"
+lubridate::mdy(my_date)
+
+my_date <- "3-Jun-1991"
+lubridate::dmy(my_date)
+
+```
+
+
+```{r}
+# dates and times 
+
+time <- "2020-08-12 11:18"
+time <- lubridate::ymd_hm(time) 
+# defined this as UTC (time zone not updated)
+
+class(time) # class is POSIXct
+
+# with a time zone 
+
+with_tz(time, "America/Los_Angeles")
+with_tz(time, "Australia/Sydney")
+```
+
+#### functions to give you time and date info 
+```{r}
+my_time <- lubridate::ymd_hms(time)
+
+# what week of the year?
+week(my_time) # 33
+
+# what day of the month? 
+day(my_time) #12
+
+minute(my_time) #18
+```
+
+#### get your system time 
+```{r}
+Sys.time()
+# gives you the current date and time 
+
+
+comp_time_start <- Sys.time()
+comp_time_end <- Sys.time()
+
+comp_time_end - comp_time_start
+# tells you how long this took to run. Could add these are the top and bottom of the script if you wanted it recorded how long it took to run 
+```
+
+
+#### Date pieces as new columns
+```{r}
+urchin_counts <- tribble(
+  ~date, ~species, ~size_mm,
+  "10/3/2020", "purple", 55,
+  "10/4/2020", "red", 48,
+  "11/17/2020", "red", 67
+)
+
+# lets put in a better format 
+urchin_counts_ymd <- urchin_counts %>% 
+  mutate(date = lubridate::mdy(date)) %>% 
+  mutate(year = year(date),
+         month = month(date),
+         day = day(date))
+
+urchin_counts_ymd %>% 
+  group_by(year) %>% 
+  summarise(total = n())
+```
+
+####  Find durations of times 
+```{r}
+day_1 <- lubridate::ymd("2020-01-06")
+day_2 <- lubridate::ymd("2020-05-18")
+day_3 <- lubridate::ymd("2024-08-19")
+
+# create a time interval 
+time_interval <- interval(day_1, day_2)
+
+# Check the length in weeks
+time_length(time_interval, "week")
+
+# check the length in years 
+time_length(time_interval, "year")
+```
+
+
+## Wrangling strings with {stringr}
+
+#### using 'str_detect()' to detect a string pattern 
+```{r}
+my_string <- "Teddy loves eating salmon and socks."
+
+# Does the pattern "love" exist within the string?
+my_string %>% 
+  str_detect("love")
+```
+
+```{r}
+my_string <- c("burrito", "fish taco", "Taco salad")
+
+# Does the vector element contain the pattern "fish"?
+my_string %>% 
+  str_detect("fish")
+```
+
+
+#### using str_detect with other functions 
+```{r}
+skywalkers <- starwars %>% 
+filter(str_detect(name, "Skywalker"))
+```
+
+
+#### using str_replace
+```{r}
+firewalkers <- starwars %>% 
+  mutate(name = str_replace(name,
+                            pattern = "Sky",
+                            replacement = "Fire"))
+```
+
+
+#### Use str_trim() or str_squish() to remove excess white space
+```{r}
+feedback <- c(" I ate   some nachos", "Wednesday morning ")
+
+str_squish(feedback)
+# removes leading, trailing, and duplicate white spaces 
+
+str_trim(feedback)
+# only removes the leading and trailing, kept the spacing in the middle 
+
+```
+
+
+#### convert the case 
+```{r}
+str_to_lower(feedback)
+
+str_to_upper(feedback)
+
+str_to_title(feedback)
+```
+
+#### count matches in a string 
+```{r}
+str_count(feedback, pattern = "nachos")
+```
+
+
+

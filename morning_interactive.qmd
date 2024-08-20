@@ -42,5 +42,84 @@ penguins_2 <- penguins %>%
 ```
 
 
+# Wrangling continued - joins of different flavors
 
+```{r}
+# copy and pasting data frames using {datapasta} 
+# With your cursor in a code chunk, go up to Addins > Datapasta > as tribble
+
+animals <- tibble::tribble(
+  ~location,   ~species,  ~maturity,
+  "lagoon",   "bobcat",    "adult",
+   "bluff",   "coyote", "juvenile",
+   "creek",      "fox",    "adult",
+    "oaks", "squirrel", "juvenile",
+   "bluff",   "bobcat",    "adult"
+  )
+
+sites <- tibble::tribble(
+  ~location,      ~full_site_name, ~jurisdiction,
+    "beach",       "Goleta Beach",     "SB City",
+   "lagoon",        "UCSB Lagoon",        "UCSB",
+    "bluff",       "Ellwood Mesa",     "SB City",
+     "oaks", "Fremont Campground",        "USFS"
+  )
+```
+
+
+### dplyr::full_join()
+```{r}
+# adds columns from the second df to the first df. It is the safest join - nothing is excluded. When in doubt, full join.
+full_join_example <- full_join(animals, sites)
+```
+
+
+### dplyr::left_join()
+```{r}
+# keeps everything in x, and only joins from y (by matching key) if they have a match in x. Otherwise they’re dropped.
+left_join_example <- left_join(animals, sites)
+```
+
+### dplyr::right_join()
+```{r}
+# opposite of a left_join()
+right_join_example <- right_join(animals, sites)
+```
+
+### dplyr::inner_join()
+```{r}
+# Rows are only kept if the key matches in both x and y (intersection).
+inner_join_example <- inner_join(animals, sites)
+```
+
+
+### Filtering joins
+We’ll just look at two filtering join functions (from dplyr documentation):
+
+- semi_join() “return[s] all rows from x with a match in y”
+- anti_join() “return[s] all rows from x without a match in y”
+```{r}
+semi_join_example <- semi_join(animals, sites)
+anti_join_example <- anti_join(animals, sites)
+```
+
+```{r}
+# these could also be written using filter()
+semi_join_test <- animals %>% 
+  filter(location %in% sites$location)
+
+anti_join_test <- animals %>% 
+  filter(!location %in% sites$location)
+```
+
+
+What happens when you don't have a key column with the same name?
+```{r}
+sites2<- sites %>% 
+  rename(place = location)
+
+test_join <- full_join(animals, sites2) # doesn't work 
+
+test_join <- full_join(animals, sites2, by = c("location" = "place")) # does work, but note that R has decided the key column be named "location" 
+```
 
