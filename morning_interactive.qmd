@@ -9,3 +9,38 @@ library(palmerpenguins)
 library(lubridate)
 ```
 
+
+# Data Wrangling refresher 
+
+### Refresher 1
+- Only include penguins at Biscoe and Dream islands
+- Remove the year and sex variables
+- Add a new column called body_mass_kg, with penguin mass converted from grams to kilograms
+- Rename the island variable to location
+```{r}
+# load in penguins dataset 
+penguins_1 <- penguins %>%
+  filter(island == "Biscoe" | island == "Dream") %>%
+  select(-sex, -year) %>% 
+  mutate(body_mass_kg = body_mass_g * 0.001) %>% 
+  rename(location = island)
+```
+
+
+### Refresher 2
+- Limit to only Adelie penguins
+- Remove any observations where flipper_length_mm is NA (hint: !is.na())
+- Group the data by sex
+- Find the mean (mean()), standard deviation (sd) and sample size (n) of flipper_length_mm for male and female Adelie penguins, returned in a nice summary table
+```{r}
+penguins_2 <- penguins %>% 
+  filter(species == "Adelie") %>% 
+  filter(!is.na(flipper_length_mm) & !is.na(sex)) %>% 
+  group_by(sex) %>% 
+  summarize(count = n(), mean_lengths = mean(flipper_length_mm), sd_lenght = sd(flipper_length_mm))
+
+```
+
+
+
+
